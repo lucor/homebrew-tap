@@ -1,0 +1,22 @@
+[tools]
+actionlint = "1.7.12"
+
+[tasks.setup]
+description = "Check the required Homebrew installation"
+run = "brew --version"
+
+[tasks.lint]
+description = "Check workflows, shell scripts, and cask style"
+run = [
+  "actionlint .github/workflows/*.yml",
+  'for script in scripts/*.sh tests/*.sh; do bash -n "$script"; done',
+  "brew style Casks/*.rb",
+]
+
+[tasks.test]
+description = "Test package discovery, failure isolation, and platform selection"
+run = ["bash tests/autobump.sh", "brew ruby tests/platforms.rb"]
+
+[tasks.check]
+description = "Run local checks"
+depends = ["lint", "test"]

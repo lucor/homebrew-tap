@@ -1,0 +1,76 @@
+name: Validate casks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: ${{ matrix.platform }} ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15-intel
+            platform: macOS
+            arch: Intel
+            tag: sequoia
+          - runner: macos-15
+            platform: macOS
+            arch: Apple Silicon
+            tag: arm64_sequoia
+          - runner: ubuntu-24.04
+            platform: Linux
+            arch: AMD64
+            tag: x86_64_linux
+          - runner: ubuntu-24.04-arm
+            platform: Linux
+            arch: ARM64
+            tag: arm64_linux
+    runs-on: ${{ matrix.runner }}
+    env:
+      HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+      CASK_PLATFORM: ${{ matrix.tag }}
+    steps:
+      - name: Set up Homebrew and check out the tap
+        uses: Homebrew/actions/setup-homebrew@3cdb78d0f62ad29dd32de765782654f4eedea607 # 2026.08.31.1
+        with:
+          stable: true
+
+      - name: Check Ruby and YAML syntax
+        run: |
+          for cask_file in Casks/*.rb; do
+            ruby -c "$cask_file"
+          done
+          ruby -e 'require "yaml"; ARGV.each { |path| YAML.parse_file(path) }' .github/workflows/*.yml
+
+      - name: Test autobump and cask platform selection
+        run: |
+          bash tests/autobump.sh
+          brew ruby tests/platforms.rb
+
+      - name: Check cask style
+        run: brew style Casks/*.rb
+
+      - name: Check releases, audit, and install casks
+        run: |
+          for cask_file in Casks/*.rb; do
+            package="${cask_file##*/}"
+            package="lucor/tap/${package%.rb}"
+            metadata="$(brew info --cask --json=v2 --variations "$package")"
+            jq -e '.casks[0].supported_platforms | type == "array"' <<< "$metadata" > /dev/null
+            if ! jq -e --arg platform "$CASK_PLATFORM" \
+              '.casks[0].supported_platforms | index($platform) != null' <<< "$metadata"; then
+              echo "Skipping $package: unsupported on $CASK_PLATFORM"
+              continue
+            fi
+            brew livecheck --cask "$package"
+            brew audit --cask --strict "$package"
+            brew install --cask "$package"
+          done

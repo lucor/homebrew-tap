@@ -1,0 +1,43 @@
+name: Autobump casks
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Cask token to update (leave empty to check every cask)
+        required: false
+        type: string
+
+concurrency:
+  group: autobump
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  autobump:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Set up Homebrew and check out the tap
+        uses: Homebrew/actions/setup-homebrew@3cdb78d0f62ad29dd32de765782654f4eedea607 # 2026.08.31.1
+        with:
+          stable: true
+
+      - name: Configure Git author
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Bump packages and open pull requests
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+          REQUESTED_PACKAGE: ${{ inputs.package }}
+        shell: bash
+        run: bash scripts/autobump.sh
