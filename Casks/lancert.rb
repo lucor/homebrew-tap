@@ -2,11 +2,11 @@ cask "lancert" do
   arch arm: "arm64", intel: "amd64"
   os macos: "darwin", linux: "linux"
 
-  version "0.4.0"
-  sha256 arm:          "ed9f5a65654783d45889a002e2d494bd95986b31b336cfd38cf94369c503ca29",
-         intel:        "fade5f7e6402607997ec37113de79b3e749e4b3ebcf28c7a4f9e5a4e463c328b",
-         arm64_linux:  "b3f011f16020b90e22a03c35fcf65fd2a030fe3a61178b5bfd54e49e844541a9",
-         x86_64_linux: "2748f57b99967763819e3bacbe3a6f56e532a4afcebb04bc18416eea3d0f7cf1"
+  version "0.5.0"
+  sha256 arm:          "416c833fac9694493ca02ef2efd69f1246ce46c62b83e90b786d405f6e554517",
+         intel:        "da7b792dbde90600fcc783d6d0d3b8769e43c6935f628312067bb88ef924fab9",
+         arm64_linux:  "ac378d534eec1829cb8a7e2f5c2806efb925b907e485b5abb74dd7db71f0f76f",
+         x86_64_linux: "2963d69fdc2630e5fe820295078ab9f27103ec317cd34b50ee2293b488b95b9c"
 
   on_macos do
     postflight_steps do
