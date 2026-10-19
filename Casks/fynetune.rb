@@ -1,13 +1,13 @@
 cask "fynetune" do
-  version "0.14.0"
+  version "0.15.0"
 
   on_arm do
-    sha256 "673fb9c2b7eb8c52f3b720049ef81d415fad785d44d7157c51aadac6d3ff5820"
+    sha256 "77fc5eac29040fda98321826f2420c9f46652b1ab485ba95ae3c6255d0f5eabe"
 
     url "https://github.com/lucor/fynetune/releases/download/v#{version}/FyneTune_#{version}_darwin_arm64.dmg"
   end
   on_intel do
-    sha256 "1bb8fa4d226e134cfef4e46aa268b9938a9b95a30eb5ddc4aeb6a9345adf4817"
+    sha256 "5f1d7dce5a912120c427032d2b73a8e974433ad2563ebb5ce6e14154cb70208c"
 
     url "https://github.com/lucor/fynetune/releases/download/v#{version}/FyneTune_#{version}_darwin_amd64.dmg"
   end
