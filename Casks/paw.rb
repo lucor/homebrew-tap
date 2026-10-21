@@ -1,13 +1,13 @@
 cask "paw" do
-  version "0.28.0"
+  version "0.28.1"
 
   on_arm do
-    sha256 "8da9f19559983ecb315f684a525ec39bcb5fb05f0fb3c7cc5c6f21004dd630af"
+    sha256 "d800fde9258455e97f05600a6caca4dae56e718907dff1f7e7f71da8f35a5fba"
 
     url "https://github.com/lucor/paw/releases/download/v#{version}/Paw_#{version}_darwin_arm64.dmg"
   end
   on_intel do
-    sha256 "bc87e1682d981a4724355267818b84f682bd2a20468400ecfee3ff7fcbef4c34"
+    sha256 "b3c7fe045af9bff246bb3ccee16ebab2660d27bb17d0fab344808f7f54312f38"
 
     url "https://github.com/lucor/paw/releases/download/v#{version}/Paw_#{version}_darwin_amd64.dmg"
   end
