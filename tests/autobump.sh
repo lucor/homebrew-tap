@@ -17,14 +17,23 @@ export BREW_CALLS="$fixture_dir/calls"
 cd "$fixture_dir"
 
 REQUESTED_PACKAGE='' bash "$script_path"
-printf '%s\n' 'bump --casks --open-pr --no-fork lucor/tap/alpha' \
-  'bump --casks --open-pr --no-fork lucor/tap/beta' > expected
+printf '%s\n' 'bump --casks --full-name --open-pr --no-fork lucor/tap/alpha' \
+  'bump --casks --full-name --open-pr --no-fork lucor/tap/beta' > expected
 diff -u expected "$BREW_CALLS"
 
 : > "$BREW_CALLS"
 REQUESTED_PACKAGE=beta bash "$script_path"
-printf '%s\n' 'bump --casks --open-pr --no-fork lucor/tap/beta' > expected
+printf '%s\n' 'bump --casks --full-name --open-pr --no-fork lucor/tap/beta' > expected
 diff -u expected "$BREW_CALLS"
+
+# Paw also exists as an alias in the official tap. Keep the tap qualification
+# through brew bump's internal bump-cask-pr invocation.
+touch Casks/paw.rb
+: > "$BREW_CALLS"
+REQUESTED_PACKAGE=paw bash "$script_path"
+printf '%s\n' 'bump --casks --full-name --open-pr --no-fork lucor/tap/paw' > expected
+diff -u expected "$BREW_CALLS"
+rm Casks/paw.rb
 
 : > "$BREW_CALLS"
 if FAIL_PACKAGE=lucor/tap/alpha REQUESTED_PACKAGE='' bash "$script_path"; then

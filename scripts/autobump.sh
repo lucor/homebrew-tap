@@ -25,8 +25,9 @@ fi
 failures=0
 for package in "${packages[@]}"; do
   echo "Checking $package"
-  # --tap checks the entire tap and ignores named packages. Use a qualified name.
-  if brew bump --casks --open-pr --no-fork "lucor/tap/$package"; then
+  # --tap ignores named packages. --full-name also preserves the tap when
+  # brew bump invokes bump-cask-pr, avoiding collisions with official casks.
+  if brew bump --casks --full-name --open-pr --no-fork "lucor/tap/$package"; then
     echo "Finished $package"
   else
     echo "Failed to update $package; continuing" >&2
