@@ -57,7 +57,8 @@ Recommended release conventions:
 ## Automatic updates
 
 The autobump workflow checks every six hours and can also be started from the
-Actions page. Leave the package input empty to process every cask, or enter a
+Actions page after publishing a release. Leave the package input empty to
+process every cask, or enter a
 single cask token such as `paw`. Each cask is processed separately, so an
 upstream error does not prevent checks for the remaining packages. Homebrew
 `livecheck` finds the latest stable version, and `brew bump` updates the
@@ -76,12 +77,17 @@ Enable **Allow GitHub Actions to create and approve pull requests** under
 The autobump job requests `contents: write` to push its update branches and
 `pull-requests: write` to open PRs. Validation only needs `contents: read`.
 
-GitHub requires approval before running CI for PRs created or updated with
-`GITHUB_TOKEN`. Select **Approve workflows to run** on the bot PR before
-reviewing its checks. You can also manually run the validation workflow on the
-update branch. A GitHub App or a fine-grained token stored only in the tap
-would avoid this approval step, but is not required to create the PRs. See
-[GitHub's workflow triggering rules](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow).
+Validation runs when files under `Casks/` or `Formula/` change in PRs targeting
+`main` and on pushes to `main`, including direct commits and merges. It checks
+the declared cask versions, audits them, and installs them on supported
+platforms; update discovery belongs to autobump. This tap currently contains
+only casks; formula validation must be added when introducing a formula.
+A newer run on the same PR or branch cancels an older run. Review passing
+checks before merging. Changes to other files can be checked with a manual run.
+
+If GitHub does not start validation for a PR created with `GITHUB_TOKEN`,
+manually start the validation workflow and select the update branch before
+merging.
 
 Autobump runs from `main`. Auto-merge is not configured; review and merge each
 update PR normally.
@@ -99,7 +105,7 @@ mise run test
 ```
 
 The named tap checks use the installed tap. CI registers its checkout directly
-as the tap, so it validates the exact PR revision and installs compatible casks
+as the tap, so it validates the selected revision and installs compatible casks
 on macOS and Linux, on both AMD64 and ARM64. Run `mise install` and
 `mise run check` for local workflow, shell syntax, cask style, and autobump tests.
 

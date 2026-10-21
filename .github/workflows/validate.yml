@@ -2,10 +2,22 @@ name: Validate casks
 
 on:
   pull_request:
+    branches:
+      - main
+    paths:
+      - "Casks/**"
+      - "Formula/**"
   push:
     branches:
       - main
+    paths:
+      - "Casks/**"
+      - "Formula/**"
   workflow_dispatch:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -58,7 +70,7 @@ jobs:
       - name: Check cask style
         run: brew style Casks/*.rb
 
-      - name: Check releases, audit, and install casks
+      - name: Audit and install casks
         run: |
           for cask_file in Casks/*.rb; do
             package="${cask_file##*/}"
@@ -70,7 +82,6 @@ jobs:
               echo "Skipping $package: unsupported on $CASK_PLATFORM"
               continue
             fi
-            brew livecheck --cask "$package"
             brew audit --cask --strict "$package"
             brew install --cask "$package"
           done
