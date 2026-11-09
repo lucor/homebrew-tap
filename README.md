@@ -15,10 +15,19 @@ brew install --cask lucor/tap/lancert
 
 Fully qualified installation commands also add the tap automatically if needed.
 
-Paw and FyneTune support macOS on Intel and Apple Silicon and install from DMG
-files. Lancert CLI supports macOS and Linux on AMD64 and ARM64 and installs
-the prebuilt binary. On Linux, use the same `brew install --cask lucor/tap/lancert`
-command with a current Homebrew installation that supports Linux casks.
+Paw supports macOS on Intel and Apple Silicon and installs from DMG files. On
+Linux, it supports AMD64 and ARM64, installs the prebuilt binary from a
+`.tar.xz` archive, and adds its launcher and icon to the user's XDG data
+directories.
+
+FyneTune supports macOS on Intel and Apple Silicon and installs from DMG files.
+Lancert CLI supports macOS and Linux on AMD64 and ARM64 and installs the
+prebuilt binary.
+
+On Linux, use the same `brew install --cask lucor/tap/paw` or
+`brew install --cask lucor/tap/lancert` command with a current Homebrew
+installation that supports Linux casks. Paw's desktop entry runs `paw` by name,
+so the Homebrew bin directory must be in the PATH of your desktop session.
 
 Paw and FyneTune are not notarized. Follow the macOS first-launch instructions
 in the [Paw](https://github.com/lucor/paw#macos) and
@@ -28,29 +37,33 @@ blocks launching them.
 ## Add a package
 
 Add one Ruby file to `Casks/` for each package. Use an `app` artifact for a
-desktop application distributed as a DMG, or `binary` for a command line tool.
-The cask should declare the GitHub upstream in `livecheck`, use stable release
-URLs, and provide a real SHA256 for each supported operating system and
-architecture. Keep the package token and filename aligned.
+macOS desktop application distributed as a DMG, or `binary` for a command line
+tool. For a desktop application distributed on both macOS and Linux, keep `app`
+inside `on_macos` and use `binary` plus XDG `artifact` entries inside `on_linux`,
+as in `Casks/paw.rb`. The cask should declare the GitHub upstream in `livecheck`,
+use stable release URLs, and provide a real SHA256 for each supported operating
+system and architecture. Keep the package token and filename aligned.
 
-For a macOS desktop app, declare `depends_on :macos`. For a CLI supporting both
-systems, use `os` and `arch` substitutions in the URL and platform-specific
-`sha256` values as in `Casks/lancert.rb`. Keep macOS-specific installation steps
-inside `on_macos`. Avoid nesting checksum stanzas inside both OS and architecture
-blocks: the native bump command skips those nested checksums. CI uses Homebrew's
-supported platform metadata to skip incompatible casks on each runner.
+For a macOS-only desktop app, declare `depends_on :macos`. For a package
+supporting both systems, use `arch` substitutions in the URL and
+platform-specific `sha256` values as in `Casks/lancert.rb` or `Casks/paw.rb`.
+Paw uses separate `on_macos` and `on_linux` URL stanzas because the archive
+extensions differ. Keep macOS-specific installation steps inside `on_macos`.
+Avoid nesting checksum stanzas inside both OS and architecture blocks: the
+native bump command skips those nested checksums. CI uses Homebrew's supported
+platform metadata to skip incompatible casks on each runner.
 
-For example, `Casks/paw.rb` describes Paw's DMGs and `Casks/lancert.rb`
-describes the Lancert CLI archives. The release name may differ between
-projects; each cask owns that URL detail, so adding a package does not require
-editing the workflows.
+For example, `Casks/paw.rb` describes Paw's DMGs and Linux archives, and
+`Casks/lancert.rb` describes the Lancert CLI archives. The release name may
+differ between projects; each cask owns that URL detail, so adding a package
+does not require editing the workflows.
 
 Recommended release conventions:
 
 - Publish stable GitHub Releases with a `v`-prefixed semantic version tag.
 - Keep DMG or archive names versioned and include `darwin_amd64` or
   `darwin_arm64` in separate macOS artifacts.
-- Use `linux_amd64` and `linux_arm64` for separate Linux CLI archives.
+- Use `linux_amd64` and `linux_arm64` for separate Linux archives.
 - Publish SHA256 digests with each release or include them in a checksums file.
 - Do not mark prereleases or drafts as the latest stable release.
 
