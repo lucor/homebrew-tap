@@ -1,11 +1,11 @@
 cask "paw" do
   arch arm: "arm64", intel: "amd64"
 
-  version "0.33.0"
-  sha256 arm:          "70e5a1f22550b74156a54554b9270fc74cf0893476017fab849f883580a87780",
-         intel:        "097cfe953c39cc1803f575990a24b81599955342b4a2a443e8c9ff701073710e",
-         arm64_linux:  "6ee8eb6d47c2a62bc9bb0e98dd7e4948c0a0259c38a8fba94c0f898c6a90a1a9",
-         x86_64_linux: "469c57e73cf1f84ec7f4744e03b97d179a7e7a4963396ba1f7fdf39f49dc5fed"
+  version "0.34.0"
+  sha256 arm:          "9c3eab61ca4ef4f08085d6fac5a51f87113a3dd3b079a945e52af9aa06cca5df",
+         intel:        "338fe838ddfaad37e9548ce9f81b543965c2e12d9d029dc9749423c8b9343b03",
+         arm64_linux:  "7da5b65ffc0e3ea93c4ee38800b99cb68a6d37b5da471b255fbb98fdbe7bd306",
+         x86_64_linux: "8be118d0f22cfed73083c55165dd2bf28e0173e70671dae2588f7050b81d666c"
 
   on_macos do
     url "https://github.com/lucor/paw/releases/download/v#{version}/Paw_#{version}_darwin_#{arch}.dmg"
